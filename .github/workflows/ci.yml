@@ -1,0 +1,41 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: bpo, POSTGRES_PASSWORD: bpo, POSTGRES_DB: bpo }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U bpo" --health-interval 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip }
+      - run: pip install -r requirements-dev.txt playwright pip-audit
+      - run: python -m playwright install --with-deps chromium
+      - name: Testes (unitários, API e E2E com acessibilidade) — SQLite
+        run: python -m pytest -q
+      - name: Testes de API — PostgreSQL (mesmo banco do Render)
+        run: python -m pytest -q --ignore=tests/test_e2e.py
+        env:
+          BPO_DATABASE_URL: postgres://bpo:bpo@localhost:5432/bpo
+      - name: Auditoria de dependências (CVEs)
+        run: pip-audit -r requirements.txt
+  imagem:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build da imagem Docker (a mesma usada pelo Render)
+        run: docker build -t bpo-financeiro .
+      - name: Imagem sobe e responde ao healthcheck na porta do Render
+        run: |
+          docker run -d --name bpo -p 10000:10000 -e PORT=10000 bpo-financeiro
+          for i in $(seq 1 30); do curl -fs localhost:10000/api/saude && exit 0; sleep 1; done
+          docker logs bpo; exit 1

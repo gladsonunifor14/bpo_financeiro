@@ -1,0 +1,11 @@
+fastapi==0.143.1
+uvicorn[standard]==0.53.0
+SQLAlchemy==2.1.4
+pydantic[email]>=2.13,<3
+pydantic-settings>=2.6,<3
+PyJWT==2.15.0
+argon2-cffi==25.1.0
+python-multipart>=0.0.20
+defusedxml==0.7.1
+httpx==0.28.1
+psycopg[binary]>=3.2,<4
