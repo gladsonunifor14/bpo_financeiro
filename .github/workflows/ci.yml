@@ -10,7 +10,7 @@ jobs:
         image: postgres:16
         env: { POSTGRES_USER: bpo, POSTGRES_PASSWORD: bpo, POSTGRES_DB: bpo }
         ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+        options: --health-cmd "pg_isready -U bpo" --health-interval 5s --health-retries 10
     defaults:
       run:
         working-directory: backend
