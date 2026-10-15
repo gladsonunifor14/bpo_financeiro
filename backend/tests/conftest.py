@@ -1,7 +1,8 @@
 import os
 
+# BPO_DATABASE_URL externo permite rodar a suíte contra PostgreSQL (ex.: no CI)
+os.environ.setdefault("BPO_DATABASE_URL", "sqlite:///:memory:")
 os.environ.update(
-    BPO_DATABASE_URL="sqlite:///:memory:",
     BPO_AMBIENTE="teste",
     BPO_COOKIE_SEGURO="false",
     BPO_RATE_LIMIT_AUTH_POR_MINUTO="10000",

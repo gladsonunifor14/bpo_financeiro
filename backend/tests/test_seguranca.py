@@ -56,3 +56,11 @@ def test_frontend_servido_com_csp(client):
     r = client.get("/")
     assert r.status_code == 200
     assert "default-src 'self'" in r.headers["content-security-policy"]
+
+
+def test_url_postgres_do_render_recebe_driver_psycopg():
+    from app.config import Settings
+
+    assert Settings(database_url="postgres://u:s@h:5432/bpo").database_url == "postgresql+psycopg://u:s@h:5432/bpo"
+    assert Settings(database_url="postgresql://u:s@h/bpo").database_url == "postgresql+psycopg://u:s@h/bpo"
+    assert Settings(database_url="sqlite:///x.db").database_url == "sqlite:///x.db"

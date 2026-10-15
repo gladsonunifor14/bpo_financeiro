@@ -1,6 +1,7 @@
 """Configuração central lida de variáveis de ambiente (prefixo BPO_)."""
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -53,6 +54,15 @@ class Settings(BaseSettings):
     open_finance_provedor: str | None = None
     open_finance_client_id: str | None = None
     open_finance_client_secret: str | None = None
+
+    @field_validator("database_url")
+    @classmethod
+    def _driver_postgres(cls, v: str) -> str:
+        # Render/Heroku entregam "postgres://..."; o SQLAlchemy precisa do driver psycopg 3
+        for prefixo in ("postgres://", "postgresql://"):
+            if v.startswith(prefixo):
+                return "postgresql+psycopg://" + v[len(prefixo):]
+        return v
 
     @property
     def producao(self) -> bool:

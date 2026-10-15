@@ -1,0 +1,65 @@
+# Blueprint do Render: https://render.com/docs/blueprint-spec
+# Render → New → Blueprint → selecione este repositório.
+services:
+  - type: web
+    name: bpo-financeiro
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free            # troque para starter/standard em produção (o plano free hiberna)
+    region: oregon
+    healthCheckPath: /api/saude
+    autoDeploy: true
+    envVars:
+      - key: BPO_AMBIENTE
+        value: producao
+      - key: BPO_DATABASE_URL
+        fromDatabase:
+          name: bpo-financeiro-db
+          property: connectionString
+      - key: BPO_JWT_SECRET
+        generateValue: true
+      - key: BPO_COOKIE_SEGURO
+        value: "true"
+      - key: BPO_CNPJ_PROVEDOR
+        value: brasilapi
+      # SMTP é obrigatório em produção: sem ele o código OTP não chega e ninguém consegue entrar.
+      - key: BPO_SMTP_HOST
+        sync: false
+      - key: BPO_SMTP_PORTA
+        value: "587"
+      - key: BPO_SMTP_USUARIO
+        sync: false
+      - key: BPO_SMTP_SENHA
+        sync: false
+      - key: BPO_SMTP_REMETENTE
+        sync: false
+
+  # Robôs diários (IA, alertas, limpeza). Cron jobs exigem plano pago no Render;
+  # descomente após adicionar um meio de pagamento.
+  # - type: cron
+  #   name: bpo-financeiro-robos
+  #   runtime: docker
+  #   dockerfilePath: ./Dockerfile
+  #   schedule: "0 9 * * *"          # 06:00 em Brasília (UTC-3)
+  #   dockerCommand: python -m app.jobs diario
+  #   envVars:
+  #     - key: BPO_AMBIENTE
+  #       value: producao
+  #     - key: BPO_DATABASE_URL
+  #       fromDatabase:
+  #         name: bpo-financeiro-db
+  #         property: connectionString
+  #     - key: BPO_JWT_SECRET
+  #       fromService:
+  #         type: web
+  #         name: bpo-financeiro
+  #         envVarKey: BPO_JWT_SECRET
+  #     - fromGroup: smtp
+
+databases:
+  - name: bpo-financeiro-db
+    databaseName: bpo
+    user: bpo
+    plan: free             # o Postgres free expira em 30 dias; use basic-256mb ou superior em produção
+    region: oregon
+    ipAllowList: []        # sem acesso externo: apenas serviços do Render na mesma região

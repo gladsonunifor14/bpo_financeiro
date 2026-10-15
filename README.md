@@ -65,6 +65,19 @@ export BPO_JWT_SECRET=$(python -c "import secrets;print(secrets.token_urlsafe(48
 docker compose up --build
 ```
 
+### Deploy no Render
+
+O arquivo [`render.yaml`](render.yaml) é um *Blueprint*: cria o serviço web (Docker) e o PostgreSQL.
+
+1. No Render: **New → Blueprint** e selecione este repositório (branch `main`).
+2. Preencha as variáveis marcadas como *sync: false*: `BPO_SMTP_HOST`, `BPO_SMTP_USUARIO`,
+   `BPO_SMTP_SENHA` e `BPO_SMTP_REMETENTE`. **Sem SMTP ninguém consegue entrar**, porque o login exige o código OTP por e-mail.
+3. `BPO_JWT_SECRET` é gerado automaticamente; HTTPS, HSTS e cookies `Secure` já vêm ativos.
+4. Após o deploy, acesse `https://<seu-servico>.onrender.com/#/cadastro` e cadastre o escritório.
+
+Os planos `free` do blueprint servem para avaliação: o serviço hiberna sem uso e o Postgres free expira
+em 30 dias. Em produção, use planos pagos (o banco ganha backups) e descomente o *cron job* dos robôs.
+
 Configurações: variáveis `BPO_*` (ver [`.env.example`](.env.example) e `backend/app/config.py`).
 
 ## Testes (QA)

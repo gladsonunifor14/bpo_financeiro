@@ -315,7 +315,7 @@ class ImportacaoExtrato(Base):
     cliente_id: Mapped[int] = mapped_column(ForeignKey("cliente.id"), index=True)
     conta_bancaria_id: Mapped[int] = mapped_column(ForeignKey("conta_bancaria.id"))
     arquivo_nome: Mapped[str] = mapped_column(String(200))
-    formato: Mapped[str] = mapped_column(String(10))  # ofx|csv|open_finance
+    formato: Mapped[str] = mapped_column(String(20))  # ofx|csv|open_finance
     quantidade: Mapped[int] = mapped_column(Integer, default=0)
     duplicados: Mapped[int] = mapped_column(Integer, default=0)
     importado_por_id: Mapped[int | None] = mapped_column(ForeignKey("usuario.id"))
