@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="BPO Financeiro: consultoria contábil e tributária com painéis de BI">
+  <title>BPO Financeiro</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <a class="pular-link" href="#conteudo" id="link-pular-conteudo">Pular para o conteúdo principal</a>
+
+  <header class="topo" id="topo">
+    <div class="topo-interno">
+      <a href="#/" class="marca" id="link-marca" aria-label="BPO Financeiro — página inicial">
+        <span class="marca-icone" aria-hidden="true">B</span>
+        <span class="marca-nome">BPO Financeiro</span>
+      </a>
+      <button type="button" class="botao-menu" id="botao-menu" aria-expanded="false" aria-controls="menu-principal" hidden>
+        <span aria-hidden="true">☰</span> Menu
+      </button>
+      <nav id="menu-principal" class="menu" aria-label="Navegação principal" hidden></nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="conteudo" tabindex="-1" aria-live="off">
+    <p class="carregando" role="status">Carregando…</p>
+  </main>
+
+  <footer class="rodape" id="rodape">
+    <p>Seus dados são tratados conforme a LGPD. <a href="#/termos" id="link-rodape-termos">Termos e privacidade</a> ·
+      <a href="/api/docs" id="link-rodape-api" target="_blank" rel="noopener">Documentação da API <span class="sr-only">(abre em nova aba)</span></a></p>
+  </footer>
+
+  <!-- Regiões de anúncio para leitores de tela -->
+  <div id="anuncio-educado" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="anuncio-urgente" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+  <div id="notificacoes" class="notificacoes" aria-hidden="true"></div>
+
+  <noscript><p class="aviso aviso-erro">Ative o JavaScript para usar o sistema.</p></noscript>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

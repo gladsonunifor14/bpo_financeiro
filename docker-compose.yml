@@ -1,0 +1,35 @@
+# Ambiente local/homologação. Em produção use segredos do orquestrador (não variáveis em texto).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: bpo
+      POSTGRES_USER: bpo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-troque-esta-senha}
+    volumes: [dados:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bpo"]
+      interval: 5s
+  api:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      BPO_DATABASE_URL: postgresql+psycopg://bpo:${POSTGRES_PASSWORD:-troque-esta-senha}@db:5432/bpo
+      BPO_JWT_SECRET: ${BPO_JWT_SECRET:?defina BPO_JWT_SECRET com 32+ caracteres aleatórios}
+      BPO_AMBIENTE: ${BPO_AMBIENTE:-desenvolvimento}
+      BPO_COOKIE_SEGURO: ${BPO_COOKIE_SEGURO:-false}
+      BPO_SMTP_HOST: ${BPO_SMTP_HOST:-}
+      BPO_SMTP_USUARIO: ${BPO_SMTP_USUARIO:-}
+      BPO_SMTP_SENHA: ${BPO_SMTP_SENHA:-}
+    ports: ["8000:8000"]
+  robos:
+    build: .
+    depends_on: [api]
+    environment:
+      BPO_DATABASE_URL: postgresql+psycopg://bpo:${POSTGRES_PASSWORD:-troque-esta-senha}@db:5432/bpo
+      BPO_JWT_SECRET: ${BPO_JWT_SECRET}
+    # Rotina diária: IA nos pendentes, alertas por e-mail e limpeza
+    command: sh -c "while true; do python -m app.jobs diario; sleep 86400; done"
+volumes:
+  dados:
